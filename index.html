@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-motion="on" data-decor="full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Velaris in Winter · study journal</title>
+<meta name="description" content="A quiet winter-night study planner with a tactile checklist that syncs across your devices.">
+<meta name="theme-color" content="#0a1030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the checklist</a>
+<div class="sky" aria-hidden="true">
+  <i class="star s1"></i><i class="star s2"></i><i class="star s3"></i><i class="star s4"></i><i class="star s5"></i><i class="star s6"></i><i class="star s7"></i><i class="star s8"></i>
+  <svg class="constellation" viewBox="0 0 220 120" fill="none" stroke="currentColor" stroke-width=".7"><path d="M10 90 L52 60 L96 70 L140 30 L190 44"/><path d="M96 70 L112 108"/><g fill="currentColor" stroke="none"><circle cx="10" cy="90" r="2"/><circle cx="52" cy="60" r="2.4"/><circle cx="96" cy="70" r="2"/><circle cx="140" cy="30" r="2.6"/><circle cx="190" cy="44" r="2"/><circle cx="112" cy="108" r="1.8"/></g></svg>
+  <svg class="mountains" viewBox="0 0 1200 160" preserveAspectRatio="none"><path d="M0 160 L0 110 L120 60 L210 105 L330 40 L450 108 L560 70 L690 112 L820 52 L940 104 L1060 66 L1200 108 L1200 160Z"/></svg>
+</div>
+<canvas id="snow" aria-hidden="true"></canvas>
+<div id="confetti" aria-hidden="true"></div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand">
+      <svg class="crest" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-opacity=".6"/><path d="M30 8a17 17 0 1 0 10 25 14 14 0 0 1-10-25z" fill="currentColor"/><circle cx="35" cy="14" r="1.6" fill="currentColor"/><circle cx="40" cy="22" r="1" fill="currentColor"/></svg>
+      <div><h1>VELARIS IN WINTER</h1><p class="sub">A quiet place to become who you are meant to be.</p></div>
+    </div>
+    <div class="toprow">
+      <p id="greet" class="greet"></p>
+      <div class="syncbox"><span id="syncPill" class="pillstat" role="status" aria-live="polite" data-kind="local">…</span><button id="syncBtn" class="ghost sm" type="button">Sync now</button></div>
+    </div>
+    <div id="banner" class="banner" hidden></div>
+    <nav id="tabs" class="tabs" aria-label="Sections"></nav>
+  </header>
+  <div class="shell">
+    <main id="main" tabindex="-1"></main>
+    <aside id="side" aria-label="Companion and progress"></aside>
+  </div>
+  <footer class="foot"><span class="orn">✦ ✦ ✦</span><p>Messages marked “Original message” were written for this app. Published quotations show their author and book.</p></footer>
+</div>
+
+<div id="auth" class="auth" hidden>
+  <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <h2 id="authTitle">Enter the library</h2>
+    <p class="muted">Sign in to keep your checklist in sync on your laptop, phone and iPad.</p>
+    <form id="authForm">
+      <label for="authEmail">Email</label><input id="authEmail" type="email" autocomplete="email" required>
+      <label for="authPass">Password</label><input id="authPass" type="password" autocomplete="current-password" minlength="6">
+      <div class="row"><button class="primary" type="submit">Sign in</button><button class="ghost" id="btnSignup" type="button">Create account</button></div>
+      <button class="link" id="btnMagic" type="button">Email me a sign-in link instead</button>
+    </form>
+    <div id="authNoCfg" hidden><p>Cloud sync isn't configured yet. Add your Supabase URL and key to <code>config.js</code> (see the README).</p></div>
+    <p id="authMsg" class="authmsg" role="status" aria-live="polite"></p>
+    <hr>
+    <button class="link" data-local type="button">Continue on this device only</button>
+  </div>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form id="dlgForm">
+    <h2 id="dlgTitle">Task</h2>
+    <label for="f-title">Task</label><input id="f-title" type="text" maxlength="200" required>
+    <div class="grid2">
+      <div><label for="f-date">Date</label><input id="f-date" type="date"></div>
+      <div><label for="f-sec">Section</label><select id="f-sec"></select></div>
+      <div><label for="f-cat">Category</label><select id="f-cat"></select></div>
+      <div><label for="f-unit">Unit (optional)</label><select id="f-unit"></select></div>
+      <div><label for="f-min">Estimated minutes</label><input id="f-min" type="number" min="0" step="5" inputmode="numeric"></div>
+      <div><label for="f-start">Start time (optional)</label><input id="f-start" type="time"></div>
+      <div><label for="f-prio">Priority</label><select id="f-prio"><option value="none">None</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+      <div id="repeatRow"><label for="f-repeat">Repeat until the exam</label><select id="f-repeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option></select></div>
+    </div>
+    <label for="f-note">Note (optional)</label><textarea id="f-note" rows="3" maxlength="1000"></textarea>
+    <div class="row end"><button class="ghost danger" id="f-del" type="button" hidden>Delete</button><span class="grow"></span><button class="ghost" id="f-cancel" type="button">Cancel</button><button class="primary" type="submit">Save</button></div>
+  </form>
+</dialog>
+
+<div id="reward" class="reward" role="status" aria-live="polite"></div>
+
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
